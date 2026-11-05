@@ -26,6 +26,54 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Extract project
+        run: |
+          mkdir project
+          unzip -o Vehicle_Failure_Report_Android_Mobile_Build.zip -d project
+
+      - name: Locate Android project
+        run: |
+          SETTINGS=$(find project -name settings.gradle -o -name settings.gradle.kts | head -n 1)
+          test -n "$SETTINGS"
+          PROJECT_DIR=$(dirname "$SETTINGS")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+
+      - name: Build APK
+        run: gradle -p "$PROJECT_DIR" assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vehicle-Failure-Report-APK
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
+          
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/android.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
       - name: Extract project ZIP
         run: |
           mkdir project
