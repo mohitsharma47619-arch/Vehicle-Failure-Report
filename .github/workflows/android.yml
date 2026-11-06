@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -40,4 +41,3 @@ jobs:
         with:
           name: Vehicle-Failure-Report-APK
           path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
-          
